@@ -1,0 +1,19 @@
+filespec:
+  - vlnv: tblink-rpc:examples.uvm.cocotb:py-uvm-seq
+    out:
+      - name: MKDV_VL_SRCS
+        type:
+          - verilogSource
+          - systemVerilogSource
+        flags:
+          - sv
+          - sv-uvm
+      - name: MKDV_VL_INCDIRS
+        type:
+          - verilogSource
+          - systemVerilogSource
+        flags:
+          - sv
+          - sv-uvm
+        include: True
+

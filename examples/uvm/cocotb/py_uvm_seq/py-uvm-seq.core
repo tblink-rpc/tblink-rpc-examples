@@ -1,0 +1,18 @@
+CAPI=2:
+
+name: tblink-rpc:examples.uvm.cocotb:py-uvm-seq
+
+filesets:
+  hvl:
+    files:
+      - src/py_uvm_seq_pkg.sv
+      - src/py_uvm_seq_tb.sv
+    file_type: systemVerilogSource
+    depend:
+      - tblink-rpc::tblink-rpc-hdl
+
+targets:
+  default:
+    filesets:
+      - hvl
+
