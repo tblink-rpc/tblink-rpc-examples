@@ -18,6 +18,7 @@ TOP_MODULE ?= py_uvm_seq_tb
 
 UVM_TESTNAME ?= py_uvm_seq_test
 MKDV_RUN_ARGS += +UVM_TESTNAME=$(UVM_TESTNAME)
+MKDV_RUN_ARGS += +m=my_seq_if +regression_runner=tblink_rpc.rt.cocotb.single_entrypoint_runner
 
 PY_UVM_SEQ_CLASS ?= MySeqIf
 PY_UVM_SEQ_MODULE ?= my_seq_if
