@@ -5,7 +5,6 @@ import tblink_rpc
 
 @tblink_rpc.iftype("my_seq_if")
 class MySeqIf(object):
-    pass
 
     @tblink_rpc.imptask
     async def body(self):
