@@ -1,0 +1,121 @@
+#*****************************************************************************
+#* mkdv.yaml
+#*****************************************************************************
+
+# Initialize context variables 
+context_parser: mkdv.parser.default
+
+steps:
+  - name: mkdv.steps.entry
+  - name: pypyr.steps.echo
+    in:
+      echoMe: "MKDV_JOBDIR={MKDV_JOBDIR}"
+  
+common:
+  - name: pypyr.steps.echo
+    in:
+      echoMe: "MKDV_JOBDIR={MKDV_JOBDIR}"
+  - name: pypyr.steps.default
+    in:
+      defaults:
+        MKDV_TOP_MODULE: py_uvm_seq_tb
+        UVM_TESTNAME: py_uvm_seq_test
+        PY_UVM_SEQ_CLASS: MySeqIf
+        PY_UVM_SEQ_MODULE: my_seq_if
+        MKDV_CACHEDIR: cachedir
+        MKDV_RUNDIR: rundir
+        
+  - name: mkdv.steps.pyrun
+    in:
+      cmd: tblink_rpc_hdl simplugin dpi
+      out: TBLINK_RPC_HDL_DPI
+        
+            
+  - name: pypyr.steps.append
+    in:
+      append:
+        list: MKDV_DPI_LIBS
+        addMe: "{TBLINK_RPC_HDL_DPI}"
+        
+  - name: pypyr.steps.append
+    in:
+      append:
+        list: MKDV_VL_INCDIRS
+        addMe: "{MKDV_CACHEDIR}"
+        
+#********************************************************************  
+#* setup
+#********************************************************************  
+setup:
+  - name: pypyr.steps.call
+    in:
+      call: common
+      
+  #******************************************************************
+  #* Collect source files from .core files
+  #******************************************************************
+  - name: mkdv.steps.filespec
+    in:
+      vlnv: tblink-rpc:examples.uvm.cocotb:py-uvm-seq
+      out:
+        - name: MKDV_VL_SRCS
+          type:
+            - verilogSource
+            - systemVerilogSource
+          flags:
+            - sv
+            - sv-uvm
+        - name: MKDV_VL_INCDIRS
+          type:
+            - verilogSource
+            - systemVerilogSource
+          flags:
+            - sv
+            - sv-uvm
+          include: True
+          
+  - name: pypyr.steps.echo
+    in:
+      echoMe: "MKDV_VL_SRCS: {MKDV_VL_SRCS}"
+
+  #******************************************************************
+  #* Generate interface file
+  #******************************************************************
+  - name: mkdv.steps.pyrun
+    in:
+      cmd: |
+        tblink_rpc_utils gen 
+          -l "{MKDV_JOBDIR}/python"
+          -is python
+          -os sv-uvm
+          -o "{MKDV_CACHEDIR}/my_seq_if.svh"
+          my_seq_if
+          
+#  - name: mkdv.steps.pyrun
+#    in:
+#      cmd: tblink_rpc_hdl simplugin dpi
+#      out: DPI_LIBS
+#      
+  - name: mkdv.steps.common_hdl_build
+
+#********************************************************************  
+#* run
+#********************************************************************  
+run:
+  - name: pypyr.steps.call
+    in:
+      call: common
+      
+  - name: pypyr.steps.append
+    in:
+      append:
+        list: MKDV_RUN_ARGS
+        unpack: True
+        addMe: 
+        - +UVM_TESTNAME={UVM_TESTNAME}
+        - +m=my_seq_it 
+        - +regression_runner=tblink.rt.cocotb.single_entrypoint_runner
+
+  - name: mkdv.steps.common_hdl_run
+
+  
